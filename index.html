@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PACE · RMIT School of Communication & Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* RMIT brand: Red #DA291C (Pantone 485C), black, white, RMIT Vietnam navy */
+    --rmit-red:#DA291C; --rmit-red-deep:#B01F15; --ink:#000000; --navy:#1E3765;
+    --paper:#FFFFFF; --paper-2:#F7F7F5; --line:#E2E0DB; --muted:#5A5A57;
+    /* three capabilities kept, tuned to sit beside RMIT red without clashing */
+    --connected:#DA291C; --adaptive:#1E7A73; --critical:#C68A1E;
+    --ai:#3D4A66; --ai-deep:#1E3765; --good:#2E7D46;
+    --inschool:#1E7A73; --outschool:#6B4E9E;
+    --shadow:0 1px 2px rgba(0,0,0,.05),0 6px 20px -12px rgba(0,0,0,.22);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:940px;margin:0 auto;padding:0 20px}
+
+  header.top{background:#000000;color:#FFFFFF;padding:0 0 30px;position:relative}
+  .brandbar{background:var(--rmit-red);height:8px;width:100%}
+  .rmitmark{display:flex;align-items:center;gap:10px;padding:16px 0 4px}
+  .rmitmark .pixel{width:22px;height:22px;background:var(--rmit-red)}
+  .rmitmark .wm{font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:.02em;color:#fff}
+  .rmitmark .unit{font-family:'JetBrains Mono',monospace;font-size:11px;color:#B8B8B4;letter-spacing:.08em;text-transform:uppercase;margin-left:6px}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--rmit-red)}
+  h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(34px,5.5vw,56px);line-height:.95;margin:6px 0 4px;letter-spacing:-.02em;color:#fff}
+  .expand{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--rmit-red);margin-bottom:14px;letter-spacing:.02em}
+  header.top p{max-width:60ch;color:#D6D6D2;font-size:15px}
+
+  /* progress ring toward threshold */
+  .thresh{display:flex;gap:22px;flex-wrap:wrap;margin-top:22px;align-items:center}
+  .capmeter{flex:1;min-width:150px}
+  .capmeter .cm-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+  .capmeter .cm-name{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#D6D6D2}
+  .capmeter .cm-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:#fff}
+  .cm-track{height:8px;background:#2a2a2a;border-radius:0;overflow:hidden;display:flex;gap:2px}
+  .cm-seg{flex:1;background:#3a3a3a;border-radius:0;transition:background .3s}
+  .cm-seg.filled-c{background:var(--connected)} .cm-seg.filled-a{background:var(--adaptive)} .cm-seg.filled-x{background:var(--critical)}
+  .cm-seg.deep{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+  .threshnote{width:100%;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#9A9A96;margin-top:4px}
+
+  section{padding:26px 0}
+  .snum{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:.1em}
+  h2{font-family:'Archivo',sans-serif;font-weight:500;font-size:24px;margin:5px 0 4px;letter-spacing:-.01em}
+  .lede{color:var(--muted);font-size:14.5px;max-width:66ch;margin-bottom:18px}
+
+  /* earn a point */
+  .earn{background:var(--paper-2);border:1px solid var(--line);border-radius:4px;padding:22px;box-shadow:var(--shadow)}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12.5px;font-family:'JetBrains Mono',monospace;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;transition:.14s;color:var(--ink);display:flex;align-items:center;gap:7px}
+  .chip i{width:9px;height:9px;border-radius:50%}
+  .chip:hover{border-color:#B7A98F}
+  .chip[aria-pressed="true"]{color:#fff}
+  .chip.cap-c[aria-pressed="true"]{background:var(--connected);border-color:var(--connected)}
+  .chip.cap-a[aria-pressed="true"]{background:var(--adaptive);border-color:var(--adaptive)}
+  .chip.cap-x[aria-pressed="true"]{background:var(--critical);border-color:var(--critical)}
+  .chip.acc-in i{background:var(--inschool)} .chip.acc-out i{background:var(--outschool)}
+  .chip.acc-in[aria-pressed="true"]{background:var(--inschool);border-color:var(--inschool)}
+  .chip.acc-out[aria-pressed="true"]{background:var(--outschool);border-color:var(--outschool)}
+  textarea{width:100%;border:1px solid var(--line);border-radius:3px;padding:11px 13px;font-family:'Inter',sans-serif;font-size:14px;resize:vertical;min-height:62px;background:#fff;color:var(--ink)}
+  textarea:focus{outline:2px solid var(--adaptive);outline-offset:1px}
+  .stage-sel{border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-family:'Inter',sans-serif;font-size:13.5px;background:#fff;color:var(--ink);width:100%;max-width:340px}
+
+  /* the two-step: participate then deepen */
+  .step-tag{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;margin-bottom:12px}
+  .step-participate{background:rgba(30,122,115,.12);color:var(--adaptive)}
+  .step-deepen{background:rgba(91,108,143,.12);color:var(--ai-deep)}
+
+  .deepen-box{border:1px solid var(--ai);border-left:4px solid var(--ai);border-radius:4px;padding:16px;background:linear-gradient(180deg,rgba(91,108,143,.05),rgba(91,108,143,.02));margin-top:4px}
+  .identity-q{font-family:'Archivo',sans-serif;font-size:16px;font-style:italic;color:#33302b;margin-bottom:10px}
+  .ai-hint{margin-top:12px;display:none;border-top:1px dashed var(--line);padding-top:12px}
+  .ai-hint.show{display:block}
+  .ai-meta{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ai-deep);margin-bottom:8px}
+  .ai-meta .pulse{width:8px;height:8px;border-radius:50%;background:var(--ai)}
+  .ai-text{font-size:13.5px;font-style:italic;color:#33302b;margin-bottom:11px}
+  .gate-btns{display:flex;gap:8px;flex-wrap:wrap}
+  .gbtn{border:1px solid var(--ai);background:#fff;color:var(--ai-deep);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:.13s}
+  .gbtn:hover{background:var(--ai);color:#fff}
+  .gbtn.accept:hover{background:var(--good);border-color:var(--good)}
+  .ai-btn{margin-top:10px;display:inline-flex;align-items:center;gap:8px;background:none;border:1px dashed var(--ai);color:var(--ai-deep);border-radius:9px;padding:8px 13px;font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:500;cursor:pointer}
+  .ai-btn:hover{background:rgba(91,108,143,.06)}
+
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;align-items:center}
+  .btn{border:none;border-radius:3px;padding:11px 18px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+  .btn.primary{background:var(--rmit-red);color:#fff} .btn.primary:hover{background:var(--rmit-red-deep)}
+  .btn.ghost{background:none;border:1px solid var(--line);color:var(--ink)} .btn.ghost:hover{border-color:#B7A98F}
+  .btn:disabled{opacity:.45;cursor:default}
+  .msg{font-size:12.5px;font-family:'JetBrains Mono',monospace;color:var(--good);display:none}
+  .msg.show{display:inline}
+
+  /* archive */
+  .archive{background:var(--navy);color:#fff;border-radius:4px;padding:24px}
+  .archive h2{color:#fff} .archive .lede{color:#C7CEDC}
+  .rec{border:1px solid #2d456f;border-radius:4px;padding:14px 15px;margin-bottom:10px;background:#182a4d}
+  .rec-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:7px}
+  .rec-cap{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:5px;color:#fff}
+  .rec-acc{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:5px}
+  .rec-acc.in{background:rgba(42,127,122,.2);color:#7FCFC9}
+  .rec-acc.out{background:rgba(138,95,168,.2);color:#C9A8E0}
+  .rec-stage{font-family:'JetBrains Mono',monospace;font-size:11px;color:#8FA0C0;margin-left:auto}
+  .rec-deep{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--good)}
+  .rec-shallow{font-size:11px;font-family:'JetBrains Mono',monospace;color:#B7935F}
+  .rec-text{font-size:13px;color:#D6DBE6;margin-top:4px}
+  .rec-id{font-size:12.5px;color:#C7CEDC;font-style:italic;margin-top:6px;padding-left:10px;border-left:2px solid var(--rmit-red)}
+  .archive-empty{color:#8FA0C0;font-size:13px;font-family:'JetBrains Mono',monospace}
+  .sharelink{margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8FA0C0}
+  .sharelink code{background:#0f1d38;padding:6px 10px;border-radius:3px;color:#fff}
+
+  .gatecard{border-radius:4px;padding:18px 20px;margin-top:16px;border:1px solid var(--line);background:var(--paper-2)}
+  .gatecard.met{border-color:var(--good);background:rgba(59,122,87,.06)}
+  .gatecard .gt{font-family:'Archivo',sans-serif;font-size:18px;font-weight:500;margin-bottom:5px}
+  .gatecard .gd{font-size:13.5px;color:var(--muted)}
+  .gatecard.met .gt{color:var(--good)}
+
+  .datapanel{border:1px dashed #B7A98F;border-radius:4px;padding:18px;background:var(--paper-2);margin-top:6px}
+  .datapanel .k{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted)}
+  pre.out{margin-top:12px;background:var(--ink);color:#CFC4AF;border-radius:3px;padding:13px;font-family:'JetBrains Mono',monospace;font-size:11px;overflow:auto;max-height:220px;display:none;white-space:pre-wrap}
+  pre.out.show{display:block}
+
+  footer{padding:30px 0 48px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);margin-top:26px}
+  footer .fnote{font-family:'JetBrains Mono',monospace;font-size:11px;color:#9C8F76;margin-top:8px}
+  .pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:3px 8px;border-radius:6px;background:rgba(91,108,143,.12);color:var(--ai-deep)}
+
+  @media(max-width:640px){.thresh{gap:14px}.capmeter{min-width:120px}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="brandbar"></div>
+<header class="top">
+  <div class="wrap">
+    <div class="rmitmark"><span class="pixel"></span><span class="wm">RMIT</span><span class="unit">School of Communication &amp; Design</span></div>
+    <div class="eyebrow">Digital Design Exhibits · prototype v0.1</div>
+    <h1>PACE</h1>
+    <div class="expand">Pathway for Adaptive, Connected and Critically Engaged</div>
+    <p>The soft, collective, and public capabilities an exhibition builds rarely show up on a transcript. PACE records the traces they leave: you leave a trace by taking part, and deepen it by reflecting on what it built in you. Only deepened traces count. Reach the threshold in-school, and your archive becomes the evidence you write two of your Exhibits assignments from.</p>
+
+    <div class="thresh" id="thresh">
+      <div class="capmeter"><div class="cm-top"><span class="cm-name">Connected</span><span class="cm-val" data-cap="Connected">0 / 2 deep</span></div><div class="cm-track" data-track="Connected"></div></div>
+      <div class="capmeter"><div class="cm-top"><span class="cm-name">Adaptive</span><span class="cm-val" data-cap="Adaptive">0 / 2 deep</span></div><div class="cm-track" data-track="Adaptive"></div></div>
+      <div class="capmeter"><div class="cm-top"><span class="cm-name">Critically Engaged</span><span class="cm-val" data-cap="Critically Engaged">0 / 2 deep</span></div><div class="cm-track" data-track="Critically Engaged"></div></div>
+      <div class="threshnote">Threshold: 2 deepened points per capability, reachable through in-school participation alone. Out-of-school participation enriches your archive but is never required.</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- EARN -->
+  <section id="earn-sec">
+    <div class="snum">01 / earn a point</div>
+    <h2>Leave a trace of what you took part in</h2>
+    <p class="lede">Start with the participation. A trace is left the moment you record real involvement; it becomes evidence only once you deepen it with reflection in the next step.</p>
+
+    <div class="earn">
+      <div class="step-tag step-participate"><span>Step 1 · leave a trace</span></div>
+
+      <div class="field">
+        <label>Which capability did this draw on?</label>
+        <div class="chips" id="capChips">
+          <button class="chip cap-c" data-cap="Connected" aria-pressed="false"><span>Connected</span></button>
+          <button class="chip cap-a" data-cap="Adaptive" aria-pressed="false"><span>Adaptive</span></button>
+          <button class="chip cap-x" data-cap="Critically Engaged" aria-pressed="false"><span>Critically Engaged</span></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Where did it happen?</label>
+        <div class="chips" id="accChips">
+          <button class="chip acc-in" data-acc="in-school" aria-pressed="true"><i></i><span>In-school (counts toward threshold)</span></button>
+          <button class="chip acc-out" data-acc="out-of-school" aria-pressed="false"><i></i><span>Out-of-school (enriches archive)</span></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>At which point in the degree?</label>
+        <select class="stage-sel" id="stageSel">
+          <option value="Y2S3 Major Studio: Practices">Y2 S3 · Major Studio: Practices</option>
+          <option value="Y3S1 Major Studio: Contexts">Y3 S1 · Major Studio: Contexts</option>
+          <option value="Y3S1 Professional Practice">Y3 S1 · Digital Design Professional Practice</option>
+          <option value="Y3S2 Digital Design Capstone">Y3 S2 · Digital Design Capstone</option>
+          <option value="Y3S3 Digital Design Exhibits" selected>Y3 S3 · Digital Design Exhibits</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>What did you take part in? (one concrete thing)</label>
+        <textarea id="partText" placeholder="e.g. Answered the open call and showed two works; gave a floor talk; collected three peer reviews at the crit."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" id="earnBtn">Leave the trace</button>
+        <span class="msg" id="earnMsg">trace left, now deepen it below</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEEPEN -->
+  <section id="deepen-sec">
+    <div class="snum">02 / deepen it</div>
+    <h2>Turn the trace into evidence</h2>
+    <p class="lede">A trace left but never reflected on stays a record of attendance. Reflection is what makes it count, and it is where your developing identity as a practitioner is recorded. Every deepen step asks one identity question.</p>
+
+    <div class="earn" id="deepenPanel" style="opacity:.5;pointer-events:none">
+      <div class="step-tag step-deepen"><span>Step 2 · reflect (deepens the trace)</span></div>
+
+      <div class="field">
+        <label>What did this build in you? (the capability reflection)</label>
+        <textarea id="capReflect" placeholder="What did you actually do, and what did it develop in how you work?"></textarea>
+      </div>
+
+      <div class="deepen-box">
+        <div class="identity-q">What did this tell you about the practitioner you are becoming?</div>
+        <textarea id="idReflect" placeholder="The identity reflection \u2014 this is the part a portfolio usually misses."></textarea>
+        <button class="ai-btn" id="aiBtn">ask the assistant for a question to think with</button>
+        <div class="ai-hint" id="aiHint">
+          <div class="ai-meta"><span class="pulse"></span>assistant · a question, never a score</div>
+          <div class="ai-text" id="aiText"></div>
+          <div class="gate-btns">
+            <button class="gbtn accept" data-d="accept">Useful</button>
+            <button class="gbtn" data-d="reject">Not for me</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="deepenBtn">Deepen &amp; save to archive</button>
+        <span class="msg" id="deepenMsg">deepened \u2014 added to your archive</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- THRESHOLD GATE -->
+  <section id="gate-sec">
+    <div class="snum">03 / assessment gate</div>
+    <div class="gatecard" id="gateCard">
+      <div class="gt" id="gateTitle">Threshold not yet met</div>
+      <div class="gd" id="gateDesc">Reach 2 deepened traces in each capability to undertake the two PACE-based Exhibits assignments. The third assignment is standalone and never depends on PACE.</div>
+    </div>
+  </section>
+
+  <!-- ARCHIVE -->
+  <section id="archive-sec">
+    <div class="snum">04 / your archive</div>
+    <div class="archive">
+      <h2>Your capability archive</h2>
+      <p class="lede">The durable, shareable record of the traces you left. This is what you write your PACE-based assignments from, and the link you can share with a mentor or employer.</p>
+      <div id="archiveBody"><p class="archive-empty">No deepened traces yet. Leave and deepen a trace to start your archive.</p></div>
+      <div class="sharelink" id="shareRow" style="display:none">
+        <span>shareable evidence link:</span> <code id="shareCode">scd.rmit.edu.vn/pace/&hellip;</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA -->
+  <section id="data-sec">
+    <div class="snum">05 / for the pilot</div>
+    <h2>Send this session to the study</h2>
+    <p class="lede">No server; nothing leaves this page unless you export it. The file records every point, whether it was deepened, its capability and access category, and how you handled each assistant question. <span class="pill">how you deepen traces is the research data</span></p>
+    <div class="datapanel">
+      <div class="k">captures: traces left \u00b7 deepened vs shallow \u00b7 capability + in/out-of-school \u00b7 identity reflections \u00b7 assistant-question decisions</div>
+      <div class="actions" style="margin-top:12px">
+        <button class="btn primary" id="exportBtn">Export session file</button>
+        <button class="btn ghost" id="previewBtn">Preview</button>
+        <button class="btn ghost" id="resetBtn">Reset</button>
+      </div>
+      <pre class="out" id="out"></pre>
+    </div>
+  </section>
+
+  <footer>
+    <div>PACE records capability that a transcript cannot: participation leaves a trace, reflection deepens it, and only deepened traces feed assessment. The assistant is a cognitive prosthesis (Akata et al., 2020): it offers a question, never a score, so the judgement and the identity work stay with you (addressing the metacognitive-laziness risk, Fan et al., 2025). The in-school route to the threshold keeps the model equitable, the way Exhibits is the school's in-school alternative to the internship.</div>
+    <div class="fnote">prototype for feedback only \u00b7 simulated assistant \u00b7 threshold values are a calibrated proposal, not final</div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const THRESH=2;
+  const session={started:new Date().toISOString(),points:[],ai_events:[]};
+  let draft={cap:null,acc:"in-school",stage:"Y3S3 Digital Design Exhibits",part:"",earned:false};
+
+  const capColor={Connected:"var(--connected)",Adaptive:"var(--adaptive)","Critically Engaged":"var(--critical)"};
+  const capSeg={Connected:"filled-c",Adaptive:"filled-a","Critically Engaged":"filled-x"};
+
+  // build meters (5 segments each, first 2 are the threshold zone)
+  document.querySelectorAll('.cm-track').forEach(tr=>{
+    for(let i=0;i<5;i++){const s=document.createElement('div');s.className='cm-seg';tr.appendChild(s);}
+  });
+
+  // capability chips
+  document.querySelectorAll('#capChips .chip').forEach(c=>c.addEventListener('click',()=>{
+    document.querySelectorAll('#capChips .chip').forEach(x=>x.setAttribute('aria-pressed','false'));
+    c.setAttribute('aria-pressed','true'); draft.cap=c.dataset.cap;
+  }));
+  // access chips
+  document.querySelectorAll('#accChips .chip').forEach(c=>c.addEventListener('click',()=>{
+    document.querySelectorAll('#accChips .chip').forEach(x=>x.setAttribute('aria-pressed','false'));
+    c.setAttribute('aria-pressed','true'); draft.acc=c.dataset.acc;
+  }));
+  document.getElementById('stageSel').addEventListener('change',e=>draft.stage=e.target.value);
+  document.getElementById('partText').addEventListener('input',e=>draft.part=e.target.value);
+
+  const deepenPanel=document.getElementById('deepenPanel');
+
+  // earn
+  document.getElementById('earnBtn').addEventListener('click',()=>{
+    if(!draft.cap){flash('earnMsg','choose a capability first','var(--connected)');return;}
+    if(draft.part.trim().length<3){flash('earnMsg','describe what you took part in','var(--connected)');document.getElementById('partText').focus();return;}
+    draft.earned=true;
+    // unlock deepen
+    deepenPanel.style.opacity=1; deepenPanel.style.pointerEvents='auto';
+    flash('earnMsg','trace left, now deepen it below','var(--good)');
+    document.getElementById('capReflect').focus();
+  });
+
+  // simulated assistant question (identity-oriented, never a score)
+  const idBank={
+    Connected:["You describe the group. Where were you inside it \u2014 leading, holding back, translating between people?","Is the way you worked here becoming a signature of how you practise, or was it a one-off?"],
+    Adaptive:["When the plan changed, did you protect your original idea or let it move? What does that say about you?","Would the practitioner you want to be have adapted the same way?"],
+    "Critically Engaged":["You defended a decision. Was that from conviction or from not wanting to lose face? Both are worth knowing.","What kind of maker do your reasons reveal \u2014 what do you refuse to compromise on?"]
+  };
+  document.getElementById('aiBtn').addEventListener('click',()=>{
+    if(!draft.cap)return;
+    const arr=idBank[draft.cap]; const q=arr[Math.floor(Math.random()*arr.length)];
+    document.getElementById('aiText').textContent='\u201C'+q+'\u201D';
+    document.getElementById('aiHint').classList.add('show');
+    document.getElementById('aiBtn').dataset.q=q;
+  });
+  document.querySelectorAll('#aiHint .gbtn').forEach(g=>g.addEventListener('click',()=>{
+    session.ai_events.push({cap:draft.cap,question:document.getElementById('aiBtn').dataset.q||'',decision:g.dataset.d,at:new Date().toISOString()});
+    document.getElementById('aiText').textContent = g.dataset.d==='accept'
+      ? '\u2713 kept \u2014 use it in your reflection above' : '\u2715 set aside \u2014 your own words stand';
+    document.querySelectorAll('#aiHint .gbtn').forEach(b=>b.style.display='none');
+  }));
+
+  // deepen & save
+  document.getElementById('deepenBtn').addEventListener('click',()=>{
+    if(!draft.earned)return;
+    const capR=document.getElementById('capReflect').value.trim();
+    const idR=document.getElementById('idReflect').value.trim();
+    const deep = capR.length>2 && idR.length>2;
+    const rec={
+      cap:draft.cap, acc:draft.acc, stage:draft.stage, participation:draft.part,
+      capReflection:capR, identityReflection:idR, deepened:deep, at:new Date().toISOString()
+    };
+    session.points.push(rec);
+    if(!deep){flash('deepenMsg','add both reflections to deepen (an identity line is required)','var(--connected)');}
+    else{flash('deepenMsg','deepened \u2014 added to your archive','var(--good)');}
+    renderArchive(); renderMeters(); renderGate();
+    // reset the form
+    draft={cap:null,acc:"in-school",stage:draft.stage,part:"",earned:false};
+    document.querySelectorAll('#capChips .chip').forEach(x=>x.setAttribute('aria-pressed','false'));
+    document.getElementById('partText').value='';
+    document.getElementById('capReflect').value=''; document.getElementById('idReflect').value='';
+    document.getElementById('aiHint').classList.remove('show');
+    document.querySelectorAll('#aiHint .gbtn').forEach(b=>b.style.display='');
+    deepenPanel.style.opacity=.5; deepenPanel.style.pointerEvents='none';
+  });
+
+  function deepCount(cap){return session.points.filter(p=>p.cap===cap && p.deepened).length;}
+
+  function renderMeters(){
+    ["Connected","Adaptive","Critically Engaged"].forEach(cap=>{
+      const deep=deepCount(cap);
+      const total=session.points.filter(p=>p.cap===cap).length;
+      const track=document.querySelector('.cm-track[data-track="'+cap+'"]');
+      const segs=track.querySelectorAll('.cm-seg');
+      segs.forEach((s,i)=>{
+        s.className='cm-seg';
+        if(i<total) s.classList.add(capSeg[cap]);
+        if(i<deep) s.classList.add('deep');
+      });
+      document.querySelector('.cm-val[data-cap="'+cap+'"]').textContent=deep+' / '+THRESH+' deep';
+    });
+  }
+
+  function renderGate(){
+    const met=["Connected","Adaptive","Critically Engaged"].every(c=>deepCount(c)>=THRESH);
+    const card=document.getElementById('gateCard');
+    if(met){
+      card.classList.add('met');
+      document.getElementById('gateTitle').textContent='Threshold met \u2014 you can undertake the two PACE-based assignments';
+      document.getElementById('gateDesc').textContent='Your archive now holds enough deepened traces across all three capabilities. Write assignments 1 and 2 from it. The grade rewards the depth of your reflection, not the number of traces.';
+    }else{
+      card.classList.remove('met');
+      const need=["Connected","Adaptive","Critically Engaged"].filter(c=>deepCount(c)<THRESH);
+      document.getElementById('gateTitle').textContent='Threshold not yet met';
+      document.getElementById('gateDesc').textContent='Still building: '+need.map(c=>c+' ('+deepCount(c)+'/'+THRESH+')').join(', ')+'. All reachable in-school. The third Exhibits assignment is standalone and never depends on PACE.';
+    }
+  }
+
+  function renderArchive(){
+    const body=document.getElementById('archiveBody');
+    const deep=session.points.filter(p=>p.deepened);
+    if(!deep.length){body.innerHTML='<p class="archive-empty">No deepened traces yet. Leave and deepen a trace to start your archive.</p>';document.getElementById('shareRow').style.display='none';return;}
+    body.innerHTML=deep.map(p=>{
+      return '<div class="rec"><div class="rec-top">'+
+        '<span class="rec-cap" style="background:'+capColor[p.cap]+'">'+p.cap+'</span>'+
+        '<span class="rec-acc '+(p.acc==='in-school'?'in':'out')+'">'+p.acc+'</span>'+
+        '<span class="rec-stage">'+p.stage.split(' ')[0]+'</span></div>'+
+        '<div class="rec-text">'+esc(p.participation)+'</div>'+
+        (p.identityReflection?'<div class="rec-id">\u201C'+esc(p.identityReflection)+'\u201D</div>':'')+
+      '</div>';
+    }).join('');
+    document.getElementById('shareRow').style.display='flex';
+  }
+
+  function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+  function flash(id,msg,color){const m=document.getElementById(id);m.textContent=msg;m.style.color=color||'var(--good)';m.classList.add('show');setTimeout(()=>m.classList.remove('show'),2800);}
+
+  // data
+  function out(){return JSON.stringify(session,null,2);}
+  document.getElementById('previewBtn').addEventListener('click',()=>{const o=document.getElementById('out');o.textContent=out();o.classList.toggle('show');});
+  document.getElementById('exportBtn').addEventListener('click',()=>{
+    session.exported=new Date().toISOString();
+    const b=new Blob([out()],{type:'application/json'});const a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download='pace_session_'+Date.now()+'.json';document.body.appendChild(a);a.click();a.remove();
+  });
+  document.getElementById('resetBtn').addEventListener('click',()=>location.reload());
+
+  renderMeters(); renderGate();
+})();
+</script>
+</body>
+</html>
