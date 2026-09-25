@@ -17,7 +17,8 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{font-family:'Inter',system-ui,sans-serif;background:#2a2a2a;color:var(--ink)}
-  .slide{position:relative;width:100vw;height:100vh;display:none;flex-direction:column;justify-content:center;padding:5.5vh 7vw;background:var(--paper);overflow:hidden}
+  .slide{position:relative;width:100vw;height:100vh;display:none;flex-direction:column;justify-content:center;padding:5.5vh 7vw;background:var(--paper);overflow:hidden;cursor:pointer}
+  .slide a{cursor:pointer}
   .slide.active{display:flex}
   .brandbar{position:absolute;top:0;left:0;width:100%;height:9px;background:var(--red)}
   .pageno{position:absolute;bottom:20px;right:32px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
@@ -153,9 +154,15 @@
   .closing h2{color:#fff} .closing .kicker{color:#fff}
   .closing ul.clean li{color:#EDEBE6;border-color:#33507d} .closing ul.clean li:before{background:#fff}
 
-  .controls{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:100;opacity:.25;transition:opacity .2s}
+  .controls{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:100;opacity:.25;transition:opacity .2s}
   .controls:hover{opacity:1}
+  .ctrl-row{display:flex;gap:8px}
   .ctrl{background:var(--ink);color:#fff;border:none;border-radius:4px;padding:7px 13px;font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer}
+  .nav-hint{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:20px;padding:5px 12px;opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
+  body.at-start .controls{opacity:1}
+  body.at-start .nav-hint{opacity:1;transform:translateY(0)}
+  body.at-start #next{animation:navPulse 1.6s ease-in-out infinite}
+  @keyframes navPulse{0%,100%{box-shadow:0 0 0 0 rgba(218,41,28,.55);background:var(--ink)}50%{box-shadow:0 0 0 7px rgba(218,41,28,0);background:var(--red)}}
   @media print{.controls{display:none}.slide{display:flex!important;page-break-after:always}}
 </style>
 </head>
@@ -546,8 +553,11 @@
 </div>
 
 <div class="controls">
-  <button class="ctrl" id="prev">&larr;</button>
-  <button class="ctrl" id="next">&rarr;</button>
+  <div class="nav-hint" id="navHint">click anywhere, or press &rarr;, to begin</div>
+  <div class="ctrl-row">
+    <button class="ctrl" id="prev">&larr;</button>
+    <button class="ctrl" id="next">&rarr;</button>
+  </div>
 </div>
 
 <script>
@@ -564,6 +574,7 @@
       void s.offsetWidth;
       s.classList.add('play-evo');
     }
+    document.body.classList.toggle('at-start',i===0);
   }
   document.getElementById('next').onclick=()=>show(i+1);
   document.getElementById('prev').onclick=()=>show(i-1);
@@ -572,9 +583,15 @@
     if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(i-1);}
     if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1);
   });
+  document.getElementById('deck').addEventListener('click',e=>{
+    if(e.target.closest('a,.controls,.ctrl')) return;
+    if(window.getSelection().toString()) return;
+    show(i+1);
+  });
   let x0=null;
   document.addEventListener('touchstart',e=>x0=e.touches[0].clientX);
   document.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)show(dx<0?i+1:i-1);x0=null;});
+  show(0);
 })();
 </script>
 </body>
