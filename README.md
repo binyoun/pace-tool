@@ -1,8 +1,8 @@
 # PACE
 
-**Pathway for Adaptive, Connected and Critically Engaged** — a prototype tool for RMIT School of Communication & Design's Digital Design Exhibits.
+**Pathway for Adaptive, Connected and Critically Engaged.** A prototype tool for RMIT School of Communication & Design's Digital Design Exhibits.
 
-PACE lets students leave a trace of what they took part in, then turn that trace into evidence through short reflection prompts. Each entry is tagged by capability (Connected, Adaptive, Critically Engaged) and by access category (in-school or out-of-school), and builds into a capability archive — a durable, shareable record students can write PACE-based assignments from, or share with a mentor or employer.
+PACE lets students leave a trace of what they took part in, then turn that trace into evidence through short reflection prompts. Each entry is tagged by capability (Connected, Adaptive, Critically Engaged) and by access category (in-school or out-of-school), and builds into a capability archive: a durable, shareable record students can write PACE-based assignments from, or share with a mentor or employer.
 
 There's no server; nothing leaves the page unless a student exports it. The exported file records every point, whether it was deepened, its capability and access category, and how the student handled each assistant question.
 
@@ -14,4 +14,6 @@ There's no server; nothing leaves the page unless a student exports it. The expo
 
 ## Live
 
-[binyoun.github.io/pace-tool](https://binyoun.github.io/pace-tool/)
+- Tool: [binyoun.github.io/pace-tool](https://binyoun.github.io/pace-tool/)
+- Capstone deck: [binyoun.github.io/pace-tool/deck.html](https://binyoun.github.io/pace-tool/deck.html)
+- Response to feedback: [binyoun.github.io/pace-tool/response.html](https://binyoun.github.io/pace-tool/response.html)
